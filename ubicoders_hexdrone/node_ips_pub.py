@@ -36,10 +36,6 @@ class HexdroneIPSPublisher(Node):
         self.hexdrone_ips_pub.publish(msg)    
         self.get_logger().info(f"Publishing: {msg.ips_x}, {msg.ips_y}, {msg.ips_z}, {msg.vdist}")
 
-        
-
-
-
 def main(args=None):
     rclpy.init(args=args)
     node = HexdroneIPSPublisher()
