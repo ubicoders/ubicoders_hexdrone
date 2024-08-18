@@ -1,10 +1,11 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile
-from std_msgs.msg import String
-from px4_msgs.msg import UbicodersMsgSubs, UbicodersMsgIps
+from px4_msgs.msg import UbicodersMsgIps
 from geometry_msgs.msg import Vector3
+from std_msgs.msg import Float32
 import numpy as np
+
 
 class HexdroneIPSPublisher(Node):
 
@@ -15,6 +16,13 @@ class HexdroneIPSPublisher(Node):
         self.hexdrone_ips_pub = self.create_publisher(UbicodersMsgIps, '/fmu/in/ubicoders_msg_ips', qos_profile)
         self.timer = self.create_timer(0.02, self.publish_ips_vdist)
         
+        self.vdist = -123.0
+        self.vdist_subs = self.create_subscription(
+            Float32,
+            '/vdist',
+            self.subs_vdist,
+            qos_profile
+        )
         self.aruco_subs = self.create_subscription(
                 Vector3,
                 '/cam/obj_pose',
@@ -22,6 +30,10 @@ class HexdroneIPSPublisher(Node):
                 qos_profile)
         
         self.ips = Vector3()
+
+    def subs_vdist(self, msg):
+        self.vdist = msg.data
+        print(self.vdist)
     
     def subs_ips(self, msg):
         self.ips = msg
@@ -32,7 +44,7 @@ class HexdroneIPSPublisher(Node):
         msg.ips_x = self.ips.x if not np.isnan(self.ips.x) else 0.0
         msg.ips_y = self.ips.y if not np.isnan(self.ips.y) else 0.0
         msg.ips_z = self.ips.z if not np.isnan(self.ips.z) else 0.0
-        msg.vdist = 0.0
+        msg.vdist = self.vdist
         self.hexdrone_ips_pub.publish(msg)    
         self.get_logger().info(f"Publishing: {msg.ips_x}, {msg.ips_y}, {msg.ips_z}, {msg.vdist}")
 

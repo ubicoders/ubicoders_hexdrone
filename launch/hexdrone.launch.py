@@ -4,6 +4,12 @@ from launch_ros.actions import Node
 def generate_launch_description():
     return LaunchDescription([
         Node(
+            package='ubicoders_hexdrone',
+            executable='vdist_pub',
+            name='vdist_pub',
+            output='screen', 
+        ),
+        Node(
             package='webcam_img_proc',
             executable='node_webcam',
             name='node_webcam',

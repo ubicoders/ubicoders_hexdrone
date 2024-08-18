@@ -26,6 +26,7 @@ setup(
     entry_points={
         'console_scripts': [
             'hexdrone_ips_pub = ubicoders_hexdrone.node_ips_pub:main',
+            'vdist_pub = ubicoders_hexdrone.node_vdist_pub:main'
         ],
     },
 )
