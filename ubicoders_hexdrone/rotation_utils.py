@@ -3,7 +3,6 @@ import numpy as np
 
 def quaternion_to_euler(quaternion):
     # Flatten the quaternion in case it's a 4x1 numpy array
-    quaternion = quaternion.flatten()
     w, x, y, z = quaternion
     
     # Roll (x-axis rotation)
