@@ -6,6 +6,7 @@ from px4_msgs.msg import UbicodersMsgAutoControlSetpoint, VehicleAttitude, Ubico
 import numpy as np
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 from .rotation_utils import quaternion_to_euler
+from .auto_control_utils import AutoPosControl
 np.set_printoptions(precision=4, suppress=True)
 
 class AutoControlNode(Node):
@@ -26,10 +27,12 @@ class AutoControlNode(Node):
         self.ips = np.zeros((3))
         self.quat = np.zeros((4))
         self.eul = np.zeros((3))
+        self.auto_control = AutoPosControl()
 
     def debug_callback(self, msg):
-        current_throttle = msg.throttle
-        self.get_logger().info(f"throttle: {current_throttle}")
+        self.auto_control.update_throttle(msg.throttle)
+        self.get_logger().info(f"Throttle: {msg.throttle}")       
+        
     
     def ips_callback(self, msg):    
         self.ips = np.array([msg.ips_x, msg.ips_y, msg.ips_z])
@@ -42,7 +45,13 @@ class AutoControlNode(Node):
         #self.get_logger().info(f"Eul: {self.eul*180/np.pi} deg")
 
     def read_and_publish_data(self):
-        pass
+        auto_control_msg = UbicodersMsgAutoControlSetpoint()
+        auto_control_msg.thrust = self.auto_control.pz_sp
+        auto_control_msg.roll = 0.0
+        auto_control_msg.pitch = 0.0
+        auto_control_msg.yaw = 0.0
+        self.publisher_.publish(auto_control_msg)
+        self.get_logger().info(f"Thrust: {auto_control_msg.thrust}")
 
 def main(args=None):
     rclpy.init(args=args)
