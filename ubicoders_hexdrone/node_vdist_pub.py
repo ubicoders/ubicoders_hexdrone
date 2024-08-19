@@ -7,7 +7,7 @@ class SerialReaderNode(Node):
     def __init__(self):
         super().__init__('node_vdist_pub')
         self.publisher_ = self.create_publisher(Float32, '/vdist', 10)
-        self.serial_port = serial.Serial('/dev/ttyUSB0', baudrate=115200, timeout=1)
+        self.serial_port = serial.Serial('/dev/ttyUSB3', baudrate=115200, timeout=1)
         self.timer = self.create_timer(0.02, self.read_and_publish_data)
         
 
@@ -20,7 +20,7 @@ class SerialReaderNode(Node):
                 float_value = float(line)
                 msg = Float32(data=float_value)
                 self.publisher_.publish(msg)
-                #self.get_logger().info(f'Published: {float_value}')
+                self.get_logger().info(f'Published: {float_value}')
             except:
                 pass
             finally:

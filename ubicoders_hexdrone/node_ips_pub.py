@@ -16,7 +16,7 @@ class HexdroneIPSPublisher(Node):
         self.hexdrone_ips_pub = self.create_publisher(UbicodersMsgIps, '/fmu/in/ubicoders_msg_ips', qos_profile)
         self.timer = self.create_timer(0.02, self.publish_ips_vdist)
         
-        self.vdist = -123.0
+        self.vdist = -999.0
         self.vdist_subs = self.create_subscription(
             Float32,
             '/vdist',
@@ -32,7 +32,7 @@ class HexdroneIPSPublisher(Node):
         self.ips = Vector3()
 
     def subs_vdist(self, msg):
-        self.vdist = msg.data
+        self.vdist = msg.data * 0.001
         print(self.vdist)
     
     def subs_ips(self, msg):
